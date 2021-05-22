@@ -1,6 +1,7 @@
 package mocksession_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -111,7 +112,9 @@ func newSession(expectedResources *resources) *discordgo.Session {
 
 	session, err := mocksession.New(
 		mocksession.WithState(state),
-		mocksession.WithRESTClient(mockrest.NewClient(state)),
+		mocksession.WithRESTClient(&http.Client{
+			Transport: mockrest.NewTransport(state),
+		}),
 	)
 	if err != nil {
 		panic(err)

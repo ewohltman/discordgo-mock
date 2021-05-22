@@ -9,28 +9,28 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (client *Client) addHandlersChannels(apiVersion string) {
+func (roundTripper *RoundTripper) addHandlersChannels(apiVersion string) {
 	pathChannels := fmt.Sprintf("%s/%s", apiVersion, resourceChannels)
 
-	subrouter := client.router.PathPrefix(pathChannels).Subrouter()
+	subrouter := roundTripper.router.PathPrefix(pathChannels).Subrouter()
 
 	pathChannelID := fmt.Sprintf("/%s", resourceChannelID)
 	pathChannelIDMessages := fmt.Sprintf("%s/%s", pathChannelID, resourceMessages)
 
 	getHandlers := subrouter.Methods(http.MethodGet).Subrouter()
-	getHandlers.HandleFunc("", client.channelsResponseGET)
-	getHandlers.HandleFunc(pathChannelID, client.channelsResponseGET)
-	getHandlers.HandleFunc(pathChannelIDMessages, client.channelMessagesResponseGET)
+	getHandlers.HandleFunc("", roundTripper.channelsResponseGET)
+	getHandlers.HandleFunc(pathChannelID, roundTripper.channelsResponseGET)
+	getHandlers.HandleFunc(pathChannelIDMessages, roundTripper.channelMessagesResponseGET)
 
 	postHandlers := subrouter.Methods(http.MethodPost).Subrouter()
-	postHandlers.HandleFunc(pathChannelIDMessages, client.channelMessagesResponsePOST)
+	postHandlers.HandleFunc(pathChannelIDMessages, roundTripper.channelMessagesResponsePOST)
 }
 
-func (client *Client) channelsResponseGET(w http.ResponseWriter, r *http.Request) {
+func (roundTripper *RoundTripper) channelsResponseGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	channelID := vars[resourceChannelIDKey]
 
-	channel, err := client.state.Channel(channelID)
+	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
 		return
@@ -47,11 +47,11 @@ func (client *Client) channelsResponseGET(w http.ResponseWriter, r *http.Request
 	_, _ = w.Write(respBody)
 }
 
-func (client *Client) channelMessagesResponseGET(w http.ResponseWriter, r *http.Request) {
+func (roundTripper *RoundTripper) channelMessagesResponseGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	channelID := vars[resourceChannelIDKey]
 
-	channel, err := client.state.Channel(channelID)
+	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
 		return
@@ -68,7 +68,7 @@ func (client *Client) channelMessagesResponseGET(w http.ResponseWriter, r *http.
 	_, _ = w.Write(respBody)
 }
 
-func (client *Client) channelMessagesResponsePOST(w http.ResponseWriter, r *http.Request) {
+func (roundTripper *RoundTripper) channelMessagesResponsePOST(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	channelID := vars[resourceChannelIDKey]
 

@@ -31,40 +31,32 @@ const (
 	resourceMembers = "members"
 )
 
-type roundTripperFunc func(req *http.Request) (*http.Response, error)
-
-func (rt roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return rt(req)
-}
-
-type Client struct {
-	*http.Client
-	state  *discordgo.State
+type RoundTripper struct {
 	router *mux.Router
+	state  *discordgo.State
 }
 
-func NewClient(state *discordgo.State) *Client {
+func (roundTripper *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	responseRecorder := httptest.NewRecorder()
+	roundTripper.router.ServeHTTP(responseRecorder, req)
+	return responseRecorder.Result(), nil
+}
+
+func NewTransport(state *discordgo.State) http.RoundTripper {
 	router := mux.NewRouter()
 
-	client := &Client{
-		Client: &http.Client{
-			Transport: roundTripperFunc(func(r *http.Request) (*http.Response, error) {
-				responseRecorder := httptest.NewRecorder()
-				router.ServeHTTP(responseRecorder, r)
-				return responseRecorder.Result(), nil
-			}),
-		},
-		state:  state,
+	roundTripper := &RoundTripper{
 		router: router,
+		state:  state,
 	}
 
 	apiVersion := "/api/v" + discordgo.APIVersion
 
-	client.addHandlersGuilds(apiVersion)
-	client.addHandlersChannels(apiVersion)
-	client.addHandlersUsers(apiVersion)
+	roundTripper.addHandlersGuilds(apiVersion)
+	roundTripper.addHandlersChannels(apiVersion)
+	roundTripper.addHandlersUsers(apiVersion)
 
-	return client
+	return roundTripper
 }
 
 func sendError(w http.ResponseWriter, err error) {

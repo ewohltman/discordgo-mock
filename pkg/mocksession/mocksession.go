@@ -1,6 +1,8 @@
 package mocksession
 
 import (
+	"net/http"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -27,7 +29,7 @@ func WithState(state *discordgo.State) OptionFunc {
 	}
 }
 
-func WithRESTClient(client discordgo.RESTClient) OptionFunc {
+func WithRESTClient(client *http.Client) OptionFunc {
 	return func(session *discordgo.Session) {
 		session.Client = client
 	}
