@@ -26,7 +26,7 @@ func WithUsername(username string) OptionFunc {
 	}
 }
 
-func IsBot(bot bool) OptionFunc {
+func WithBotFlag(bot bool) OptionFunc {
 	return func(user *discordgo.User) {
 		user.Bot = bot
 	}

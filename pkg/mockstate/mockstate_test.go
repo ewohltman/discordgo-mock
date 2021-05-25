@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 		mockstate.WithUser(mockuser.New(
 			mockuser.WithID("Bot"),
 			mockuser.WithUsername("Bot"),
-			mockuser.IsBot(true),
+			mockuser.WithBotFlag(true),
 		)),
 		mockstate.WithGuilds(mockguild.New(
 			mockguild.WithID(mockconstants.TestGuild),

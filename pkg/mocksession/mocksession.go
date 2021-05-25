@@ -29,7 +29,7 @@ func WithState(state *discordgo.State) OptionFunc {
 	}
 }
 
-func WithRESTClient(client *http.Client) OptionFunc {
+func WithClient(client *http.Client) OptionFunc {
 	return func(session *discordgo.Session) {
 		session.Client = client
 	}

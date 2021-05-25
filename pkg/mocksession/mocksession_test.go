@@ -102,7 +102,7 @@ func newSession(expectedResources *resources) *discordgo.Session {
 		mockstate.WithUser(mockuser.New(
 			mockuser.WithID("Bot"),
 			mockuser.WithUsername("Bot"),
-			mockuser.IsBot(true),
+			mockuser.WithBotFlag(true),
 		)),
 		mockstate.WithGuilds(expectedResources.guild),
 	)
@@ -112,7 +112,7 @@ func newSession(expectedResources *resources) *discordgo.Session {
 
 	session, err := mocksession.New(
 		mocksession.WithState(state),
-		mocksession.WithRESTClient(&http.Client{
+		mocksession.WithClient(&http.Client{
 			Transport: mockrest.NewTransport(state),
 		}),
 	)
