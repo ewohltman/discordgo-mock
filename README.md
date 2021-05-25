@@ -14,7 +14,7 @@ new, updating, or deleting resources will also update the internal
 ## Example Usage
 
 ```go
-package mock
+package mocksession_test
 
 import (
 	"net/http"
@@ -32,7 +32,7 @@ import (
 	"github.com/ewohltman/discordgo-mock/pkg/mockuser"
 )
 
-func TestGuild(t *testing.T) {
+func TestNew(t *testing.T) {
 	state, err := newState()
 	if err != nil {
 		t.Fatal(err)
@@ -136,12 +136,12 @@ func newState() (*discordgo.State, error) {
 
 Output:
 ```
-=== RUN   TestGuild
-    test_test.go:40: Name: testGuild
-    test_test.go:41: Channels: 2
-    test_test.go:42: Members: 2
-    test_test.go:44: Roles before change: 1
-    test_test.go:56: Roles after change: 2
---- PASS: TestGuild (0.00s)
+=== RUN   TestNew
+    mocksession_test.go:40: Name: testGuild
+    mocksession_test.go:41: Channels: 2
+    mocksession_test.go:42: Members: 2
+    mocksession_test.go:44: Roles before change: 1
+    mocksession_test.go:56: Roles after change: 2
+--- PASS: TestNew (0.00s)
 PASS
 ```
