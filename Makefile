@@ -1,7 +1,7 @@
 .PHONY: fmt lint test
 
 fmt:
-	@gofmt -s -w . && goimports -w . && go mod tidy
+	@gofmt -s -w . && goimports -local github.com/ewohltman/discordgo-mock -w . && go mod tidy
 
 lint: fmt
 	@golangci-lint run ./...

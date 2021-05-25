@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/ewohltman/discordgo-mock/pkg/mockconstants"
+
+	"github.com/ewohltman/discordgo-mock/mockconstants"
 )
 
 type OptionFunc func(state *discordgo.State) error
