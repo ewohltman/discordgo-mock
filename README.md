@@ -1,5 +1,7 @@
 # discordgo-mock
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/ewohltman/discordgo-mock.svg)](https://pkg.go.dev/github.com/ewohltman/discordgo-mock)
+
 `discordgo-mock` is a helper library to assist with writing unit tests for
 projects that use [discordgo](https://github.com/bwmarrin/discordgo). The
 library provides a custom `http.RoundTripper` to be injected into an
