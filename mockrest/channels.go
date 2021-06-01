@@ -1,7 +1,6 @@
 package mockrest
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -36,15 +35,7 @@ func (roundTripper *RoundTripper) channelsResponseGET(w http.ResponseWriter, r *
 		return
 	}
 
-	respBody, err := json.Marshal(channel)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, channel)
 }
 
 func (roundTripper *RoundTripper) channelMessagesResponseGET(w http.ResponseWriter, r *http.Request) {
@@ -57,15 +48,7 @@ func (roundTripper *RoundTripper) channelMessagesResponseGET(w http.ResponseWrit
 		return
 	}
 
-	respBody, err := json.Marshal(channel.Messages)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, channel.Messages)
 }
 
 func (roundTripper *RoundTripper) channelMessagesResponsePOST(w http.ResponseWriter, r *http.Request) {
@@ -77,13 +60,5 @@ func (roundTripper *RoundTripper) channelMessagesResponsePOST(w http.ResponseWri
 		ChannelID: channelID,
 	}
 
-	respBody, err := json.Marshal(message)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, message)
 }

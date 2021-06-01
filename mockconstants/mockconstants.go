@@ -1,7 +1,7 @@
+// Package mockconstants provides common constant definitions.
 package mockconstants
 
-// String values to be used in other tests corresponding to the objects created
-// in the mock session.
+// Constant values to be used in unit tests.
 const (
 	TestSession        = "testSession"
 	TestGuild          = "testGuild"

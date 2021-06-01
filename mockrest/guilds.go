@@ -25,11 +25,11 @@ func (roundTripper *RoundTripper) addHandlersGuilds(apiVersion string) {
 	getHandlers := subrouter.Methods(http.MethodGet).Subrouter()
 	getHandlers.HandleFunc("", roundTripper.guildGET)
 	getHandlers.HandleFunc(pathRoles, roundTripper.guildRolesGET)
-	getHandlers.HandleFunc(pathRoleID, roundTripper.guildRolesGET)
+	getHandlers.HandleFunc(pathRoleID, roundTripper.guildRolesIDGET)
 	getHandlers.HandleFunc(pathMembers, roundTripper.guildMembersGET)
-	getHandlers.HandleFunc(pathMembersUserID, roundTripper.guildMembersGET)
-	getHandlers.HandleFunc(pathMembersUserIDRoles, roundTripper.guildMembersGET)
-	getHandlers.HandleFunc(pathMembersUserIDRoleID, roundTripper.guildMembersGET)
+	getHandlers.HandleFunc(pathMembersUserID, roundTripper.guildMembersUserIDGET)
+	getHandlers.HandleFunc(pathMembersUserIDRoles, roundTripper.guildMembersUserIDGET)
+	getHandlers.HandleFunc(pathMembersUserIDRoleID, roundTripper.guildMembersUserIDGET)
 
 	postHandlers := subrouter.Methods(http.MethodPost).Subrouter()
 	postHandlers.HandleFunc(pathRoles, roundTripper.guildRolesPOST)
@@ -52,8 +52,6 @@ func (roundTripper *RoundTripper) guildGET(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	guildID, foundGuildID := vars[resourceGuildIDKey]
 
-	var respBody []byte
-
 	switch {
 	case foundGuildID:
 		guild, err := roundTripper.state.Guild(guildID)
@@ -62,102 +60,64 @@ func (roundTripper *RoundTripper) guildGET(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		respBody, err = json.Marshal(guild)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
+		sendJSON(w, guild)
 	default:
-		var err error
-
-		respBody, err = json.Marshal(roundTripper.state.Guilds)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
+		sendJSON(w, roundTripper.state.Guilds)
 	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
 }
 
 func (roundTripper *RoundTripper) guildRolesGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	guildID := vars[resourceGuildIDKey]
-	roleID, foundRoleID := vars[resourceRoleIDKey]
 
-	var respBody []byte
-
-	switch {
-	case foundRoleID:
-		role, err := roundTripper.state.Role(guildID, roleID)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
-
-		respBody, err = json.Marshal(role)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
-	default:
-		guild, err := roundTripper.state.Guild(guildID)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
-
-		respBody, err = json.Marshal(guild.Roles)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
+	guild, err := roundTripper.state.Guild(guildID)
+	if err != nil {
+		sendError(w, err)
+		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	sendJSON(w, guild.Roles)
+}
 
-	_, _ = w.Write(respBody)
+func (roundTripper *RoundTripper) guildRolesIDGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guildID := vars[resourceGuildIDKey]
+	roleID := vars[resourceRoleIDKey]
+
+	role, err := roundTripper.state.Role(guildID, roleID)
+	if err != nil {
+		sendError(w, err)
+		return
+	}
+
+	sendJSON(w, role)
 }
 
 func (roundTripper *RoundTripper) guildMembersGET(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	guildID := vars[resourceGuildIDKey]
-	userID, foundUserID := vars[resourceUserIDKey]
 
-	var respBody []byte
-
-	switch {
-	case foundUserID:
-		member, err := roundTripper.state.Member(guildID, userID)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
-
-		respBody, err = json.Marshal(member)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
-	default:
-		guild, err := roundTripper.state.Guild(guildID)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
-
-		respBody, err = json.Marshal(guild.Members)
-		if err != nil {
-			sendError(w, err)
-			return
-		}
+	guild, err := roundTripper.state.Guild(guildID)
+	if err != nil {
+		sendError(w, err)
+		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	sendJSON(w, guild.Members)
+}
 
-	_, _ = w.Write(respBody)
+func (roundTripper *RoundTripper) guildMembersUserIDGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guildID := vars[resourceGuildIDKey]
+	userID := vars[resourceUserIDKey]
+
+	member, err := roundTripper.state.Member(guildID, userID)
+	if err != nil {
+		sendError(w, err)
+		return
+	}
+
+	sendJSON(w, member)
 }
 
 func (roundTripper *RoundTripper) guildRolesPOST(w http.ResponseWriter, r *http.Request) {
@@ -174,15 +134,7 @@ func (roundTripper *RoundTripper) guildRolesPOST(w http.ResponseWriter, r *http.
 		return
 	}
 
-	respBody, err := json.Marshal(role)
-	if err != nil {
-		sendError(w, fmt.Errorf("error marshaling role to response body: %w", err))
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, role)
 }
 
 func (roundTripper *RoundTripper) guildMembersPOST(w http.ResponseWriter, r *http.Request) {
@@ -207,15 +159,7 @@ func (roundTripper *RoundTripper) guildMembersPOST(w http.ResponseWriter, r *htt
 
 	guild.MemberCount++
 
-	respBody, err := json.Marshal(member)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, member)
 }
 
 func (roundTripper *RoundTripper) guildMemberRolesPUT(w http.ResponseWriter, r *http.Request) {
@@ -237,8 +181,6 @@ func (roundTripper *RoundTripper) guildMemberRolesPUT(w http.ResponseWriter, r *
 		sendError(w, fmt.Errorf("unable to add or update member: %w", err))
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write([]byte{})
 }
@@ -276,15 +218,7 @@ func (roundTripper *RoundTripper) guildRolesPATCH(w http.ResponseWriter, r *http
 		return
 	}
 
-	respBody, err := json.Marshal(role)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, role)
 }
 
 func (roundTripper *RoundTripper) guildMembersPATCH(w http.ResponseWriter, r *http.Request) {
@@ -320,15 +254,7 @@ func (roundTripper *RoundTripper) guildMembersPATCH(w http.ResponseWriter, r *ht
 		return
 	}
 
-	respBody, err := json.Marshal(member)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, member)
 }
 
 func (roundTripper *RoundTripper) guildRolesDELETE(w http.ResponseWriter, r *http.Request) {
@@ -341,8 +267,6 @@ func (roundTripper *RoundTripper) guildRolesDELETE(w http.ResponseWriter, r *htt
 		sendError(w, fmt.Errorf("unable to remove role: %w", err))
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write([]byte{})
 }
@@ -363,8 +287,6 @@ func (roundTripper *RoundTripper) guildMembersDELETE(w http.ResponseWriter, r *h
 		sendError(w, fmt.Errorf("unable to remove member: %w", err))
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write([]byte{})
 }
@@ -393,8 +315,6 @@ func (roundTripper *RoundTripper) guildMemberRolesDELETE(w http.ResponseWriter, 
 	if index != -1 {
 		member.Roles = append(member.Roles[:index], member.Roles[index:len(member.Roles)]...)
 	}
-
-	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write([]byte{})
 }
