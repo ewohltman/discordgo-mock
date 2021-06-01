@@ -1,3 +1,5 @@
+// Package mocksession provides functionality for creating a mock
+// *discordgo.Session.
 package mocksession
 
 import (
@@ -6,10 +8,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// OptionFunc is a function that can be used to apply different options to a
+// *discordgo.Session.
 type OptionFunc func(session *discordgo.Session)
 
-// New provides a *discordgo.Session instance to be used in unit testing with
-// pre-populated initial state.
+// New returns a new *discordgo.Session with the given optionFuncs applied.
 func New(optionFuncs ...OptionFunc) (*discordgo.Session, error) {
 	session := &discordgo.Session{
 		Ratelimiter: discordgo.NewRatelimiter(),
@@ -22,6 +25,8 @@ func New(optionFuncs ...OptionFunc) (*discordgo.Session, error) {
 	return session, nil
 }
 
+// WithState sets a *discordgo.Session.State to the given state and sets
+// *discordgo.Session.StateEnabled to true.
 func WithState(state *discordgo.State) OptionFunc {
 	return func(session *discordgo.Session) {
 		session.State = state
@@ -29,6 +34,7 @@ func WithState(state *discordgo.State) OptionFunc {
 	}
 }
 
+// WithClient sets a *discordgo.Session.Client to the given client.
 func WithClient(client *http.Client) OptionFunc {
 	return func(session *discordgo.Session) {
 		session.Client = client

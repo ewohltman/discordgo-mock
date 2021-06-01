@@ -1,7 +1,6 @@
 package mockrest
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -25,17 +24,5 @@ func (roundTripper *RoundTripper) usersResponse(w http.ResponseWriter, r *http.R
 	vars := mux.Vars(r)
 	userID := vars[resourceUserIDKey]
 
-	user := &discordgo.User{
-		ID: userID,
-	}
-
-	respBody, err := json.Marshal(user)
-	if err != nil {
-		sendError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, _ = w.Write(respBody)
+	sendJSON(w, &discordgo.User{ID: userID})
 }
