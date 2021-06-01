@@ -11,7 +11,7 @@ The custom `http.RoundTripper` maps the Discord REST API methods and paths to
 appropriate handler functions and returns expected data based upon what is in
 the provided `discordgo.State` cache. Discord API calls that involve creating
 new, updating, or deleting resources will also update the internal
-`discordgo.State` cache so that subsequent queries will return them.
+`discordgo.State` cache to maintain state changes.
 
 ## Example Usage
 
