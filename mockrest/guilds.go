@@ -17,10 +17,13 @@ func (roundTripper *RoundTripper) addHandlersGuilds(apiVersion string) {
 
 	pathRoles := fmt.Sprintf("/%s", resourceRoles)
 	pathRoleID := fmt.Sprintf("%s/%s", pathRoles, resourceRoleID)
+
 	pathMembers := fmt.Sprintf("/%s", resourceMembers)
 	pathMembersUserID := fmt.Sprintf("%s/%s", pathMembers, resourceUserID)
 	pathMembersUserIDRoles := fmt.Sprintf("%s/%s", pathMembersUserID, resourceRoles)
 	pathMembersUserIDRoleID := fmt.Sprintf("%s/%s", pathMembersUserIDRoles, resourceRoleID)
+
+	pathChannels := fmt.Sprintf("/%s", resourceChannels)
 
 	getHandlers := subrouter.Methods(http.MethodGet).Subrouter()
 	getHandlers.HandleFunc("", roundTripper.guildGET)
@@ -30,6 +33,7 @@ func (roundTripper *RoundTripper) addHandlersGuilds(apiVersion string) {
 	getHandlers.HandleFunc(pathMembersUserID, roundTripper.guildMembersUserIDGET)
 	getHandlers.HandleFunc(pathMembersUserIDRoles, roundTripper.guildMembersUserIDGET)
 	getHandlers.HandleFunc(pathMembersUserIDRoleID, roundTripper.guildMembersUserIDGET)
+	getHandlers.HandleFunc(pathChannels, roundTripper.guildChannelsGET)
 
 	postHandlers := subrouter.Methods(http.MethodPost).Subrouter()
 	postHandlers.HandleFunc(pathRoles, roundTripper.guildRolesPOST)
@@ -118,6 +122,19 @@ func (roundTripper *RoundTripper) guildMembersUserIDGET(w http.ResponseWriter, r
 	}
 
 	sendJSON(w, member)
+}
+
+func (roundTripper *RoundTripper) guildChannelsGET(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guildID := vars[resourceGuildIDKey]
+
+	guild, err := roundTripper.state.Guild(guildID)
+	if err != nil {
+		sendError(w, err)
+		return
+	}
+
+	sendJSON(w, guild.Channels)
 }
 
 func (roundTripper *RoundTripper) guildRolesPOST(w http.ResponseWriter, r *http.Request) {
