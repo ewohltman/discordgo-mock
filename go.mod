@@ -3,7 +3,7 @@ module github.com/ewohltman/discordgo-mock
 go 1.18
 
 require (
-	github.com/bwmarrin/discordgo v0.24.0
+	github.com/bwmarrin/discordgo v0.26.0
 	github.com/gorilla/mux v1.8.0
 )
 
