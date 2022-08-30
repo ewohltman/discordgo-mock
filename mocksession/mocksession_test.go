@@ -33,28 +33,23 @@ func TestNew(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	guildBefore, err := session.Guild(mockconstants.TestGuild)
+	_, err = session.Guild(mockconstants.TestGuild)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("Name: %s", guildBefore.Name)
-	t.Logf("Channels: %d", len(guildBefore.Channels))
-	t.Logf("Members: %d", guildBefore.MemberCount)
-
-	t.Logf("Roles before change: %d", len(guildBefore.Roles))
-
-	_, err = session.GuildRoleCreate(guildBefore.ID)
+	_, err = session.GuildRoleCreate(
+		mockconstants.TestGuild,
+		&discordgo.RoleParams{Name: mockconstants.TestRole},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	guildAfter, err := session.Guild(mockconstants.TestGuild)
+	_, err = session.Guild(mockconstants.TestGuild)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Logf("Roles after change: %d", len(guildAfter.Roles))
 }
 
 func newState() (*discordgo.State, error) {
