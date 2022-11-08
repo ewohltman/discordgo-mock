@@ -14,10 +14,14 @@ func (roundTripper *RoundTripper) addHandlersUsers(apiVersion string) {
 	subrouter := roundTripper.router.PathPrefix(pathUsers).Subrouter()
 
 	pathUserID := fmt.Sprintf("/%s", resourceUserID)
+	pathUserIDChannels := fmt.Sprintf("/%s/channels", resourceUserID)
 
 	getHandlers := subrouter.Methods(http.MethodGet).Subrouter()
 	getHandlers.HandleFunc("", roundTripper.usersResponse)
 	getHandlers.HandleFunc(pathUserID, roundTripper.usersResponse)
+
+	postHandlers := subrouter.Methods(http.MethodPost).Subrouter()
+	postHandlers.HandleFunc(pathUserIDChannels, roundTripper.userChannelsResponse)
 }
 
 func (roundTripper *RoundTripper) usersResponse(w http.ResponseWriter, r *http.Request) {
@@ -25,4 +29,11 @@ func (roundTripper *RoundTripper) usersResponse(w http.ResponseWriter, r *http.R
 	userID := vars[resourceUserIDKey]
 
 	sendJSON(w, &discordgo.User{ID: userID})
+}
+
+func (roundTripper *RoundTripper) userChannelsResponse(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID := vars[resourceUserIDKey]
+
+	sendJSON(w, &discordgo.Channel{ID: userID})
 }
