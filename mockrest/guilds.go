@@ -194,8 +194,9 @@ func (roundTripper *RoundTripper) guildChannelsPOST(w http.ResponseWriter, r *ht
 
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
-	if err := dec.Decode(&ch); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+
+	if err = dec.Decode(&ch); err != nil {
+		sendError(w, err)
 		return
 	}
 
