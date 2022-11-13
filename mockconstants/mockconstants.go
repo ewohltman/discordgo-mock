@@ -12,4 +12,5 @@ const (
 	TestRole           = "testRole"
 	TestUser           = "testUser"
 	TestUserBot        = "testUserBot"
+	TestInviteCode     = "testInviteCode"
 )

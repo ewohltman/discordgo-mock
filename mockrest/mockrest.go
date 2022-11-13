@@ -26,6 +26,7 @@ const (
 	resourceChannelIDKey = "channelID"
 	resourceChannelID    = "{" + resourceChannelIDKey + "}"
 	resourceMessages     = "messages"
+	resourceInvites      = "invites"
 
 	resourceGuilds     = "guilds"
 	resourceGuildIDKey = "guildID"
