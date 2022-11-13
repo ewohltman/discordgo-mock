@@ -44,6 +44,7 @@ func (roundTripper *RoundTripper) addHandlersGuilds(apiVersion string) {
 	putHandlers.HandleFunc(pathMembersUserIDRoleID, roundTripper.guildMemberRolesPUT)
 
 	patchHandlers := subrouter.Methods(http.MethodPatch).Subrouter()
+	patchHandlers.HandleFunc("", roundTripper.guildPATCH)
 	patchHandlers.HandleFunc(pathRoleID, roundTripper.guildRolesPATCH)
 	patchHandlers.HandleFunc(pathMembersUserID, roundTripper.guildMembersPATCH)
 
@@ -64,6 +65,37 @@ func (roundTripper *RoundTripper) guildGET(w http.ResponseWriter, r *http.Reques
 			sendError(w, err)
 			return
 		}
+
+		sendJSON(w, guild)
+	default:
+		sendJSON(w, roundTripper.state.Guilds)
+	}
+}
+
+func (roundTripper *RoundTripper) guildPATCH(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guildID, foundGuildID := vars[resourceGuildIDKey]
+
+	switch {
+	case foundGuildID:
+		guild, err := roundTripper.state.Guild(guildID)
+		if err != nil {
+			sendError(w, err)
+			return
+		}
+
+		gp := &discordgo.GuildParams{}
+
+		dec := json.NewDecoder(r.Body)
+		dec.DisallowUnknownFields()
+
+		if err = dec.Decode(&gp); err != nil {
+			sendError(w, err)
+			return
+		}
+
+		guild.Name = gp.Name
+		guild.Region = gp.Region
 
 		sendJSON(w, guild)
 	default:

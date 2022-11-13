@@ -35,5 +35,15 @@ func (roundTripper *RoundTripper) userChannelsResponse(w http.ResponseWriter, r 
 	vars := mux.Vars(r)
 	userID := vars[resourceUserIDKey]
 
+	ch := &discordgo.Channel{ID: userID,
+		Type: discordgo.ChannelTypeDM,
+	}
+
+	err := roundTripper.state.ChannelAdd(ch)
+	if err != nil {
+		sendError(w, err)
+		return
+	}
+
 	sendJSON(w, &discordgo.Channel{ID: userID})
 }
