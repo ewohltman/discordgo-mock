@@ -222,7 +222,9 @@ func (roundTripper *RoundTripper) guildChannelsPOST(w http.ResponseWriter, r *ht
 		return
 	}
 
-	ch := &discordgo.Channel{}
+	ch := &discordgo.Channel{
+		ID: randString(),
+	}
 
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
