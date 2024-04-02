@@ -18,6 +18,8 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
+
 	state, err := newState()
 	if err != nil {
 		t.Fatal(err)

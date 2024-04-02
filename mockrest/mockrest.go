@@ -79,6 +79,7 @@ func sendJSON(w http.ResponseWriter, object interface{}) {
 	respBody, err := json.Marshal(object)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
