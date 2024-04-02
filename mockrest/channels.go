@@ -3,10 +3,9 @@ package mockrest
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/ewohltman/discordgo-mock/mockconstants"
-
-	"net/http"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gorilla/mux"
@@ -17,7 +16,7 @@ func (roundTripper *RoundTripper) addHandlersChannels(apiVersion string) {
 
 	subrouter := roundTripper.router.PathPrefix(pathChannels).Subrouter()
 
-	pathChannelID := fmt.Sprintf("/%s", resourceChannelID)
+	pathChannelID := "/" + resourceChannelID
 	pathChannelIDMessages := fmt.Sprintf("%s/%s", pathChannelID, resourceMessages)
 	pathChannelIDInvites := fmt.Sprintf("%s/%s", pathChannelID, resourceInvites)
 
@@ -44,6 +43,7 @@ func (roundTripper *RoundTripper) channelsResponseGET(w http.ResponseWriter, r *
 	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -57,6 +57,7 @@ func (roundTripper *RoundTripper) channelsResponseDelete(w http.ResponseWriter, 
 	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -70,6 +71,7 @@ func (roundTripper *RoundTripper) channelsResponsePatch(w http.ResponseWriter, r
 	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -78,21 +80,23 @@ func (roundTripper *RoundTripper) channelsResponsePatch(w http.ResponseWriter, r
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
-	if err = dec.Decode(&c); err != nil {
+	err = dec.Decode(&c)
+	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
 	channel.Name = c.Name
 	channel.Topic = c.Topic
-	channel.MessageCount = c.Position
+	channel.MessageCount = *c.Position
 
 	if c.NSFW != nil {
 		channel.NSFW = *c.NSFW
 	}
 
 	channel.Icon = c.ParentID
-	channel.Position = c.Position
+	channel.Position = *c.Position
 	channel.Bitrate = c.Bitrate
 	channel.PermissionOverwrites = c.PermissionOverwrites
 	channel.UserLimit = c.UserLimit
@@ -112,6 +116,7 @@ func (roundTripper *RoundTripper) channelMessagesResponseGET(w http.ResponseWrit
 	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -125,6 +130,7 @@ func (roundTripper *RoundTripper) channelMessagesResponsePOST(w http.ResponseWri
 	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -133,8 +139,10 @@ func (roundTripper *RoundTripper) channelMessagesResponsePOST(w http.ResponseWri
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
-	if err = dec.Decode(&message); err != nil {
+	err = dec.Decode(&message)
+	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -148,6 +156,7 @@ func (roundTripper *RoundTripper) channelMessagesResponsePOST(w http.ResponseWri
 	err = roundTripper.state.MessageAdd(message)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -161,12 +170,14 @@ func (roundTripper *RoundTripper) channelInvitesResponsePOST(w http.ResponseWrit
 	channel, err := roundTripper.state.Channel(channelID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
 	guild, err := roundTripper.state.Guild(channel.GuildID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -175,8 +186,10 @@ func (roundTripper *RoundTripper) channelInvitesResponsePOST(w http.ResponseWrit
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
-	if err := dec.Decode(&invite); err != nil {
+	err = dec.Decode(&invite)
+	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 

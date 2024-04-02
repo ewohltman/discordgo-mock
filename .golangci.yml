@@ -1,7 +1,9 @@
 ---
 linters-settings:
-  dupl:
-    threshold: 100
+  cyclop:
+    max-complexity: 15
+    package-average: 0.0
+    skip-tests: true
   funlen:
     lines: 100
     statements: 50
@@ -15,72 +17,60 @@ linters-settings:
       - opinionated
       - performance
       - style
-    disabled-checks:
   gocyclo:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/ewohltman/discordgo-mock
-  golint:
-    min-confidence: 0.8
-  govet:
-    check-shadowing: true
   lll:
     line-length: 140
-  maligned:
-    suggest-new: true
   misspell:
     locale: US
 
 linters:
-  disable-all: true
-  enable:
-    - bodyclose
+  enable-all: true
+  disable:
     - deadcode
     - depguard
-    - dogsled
-    - dupl
-    - errcheck
-    - exportloopref
-    - funlen
-    - gochecknoglobals
-    - gochecknoinits
-    - gocognit
-    - goconst
-    - gocritic
-    - gocyclo
-    - godox
-    - gofmt
-    - goimports
-    - gomnd
-    - goprintffuncname
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - lll
-    - misspell
-    - nakedret
-    - prealloc
-    - revive
-    - rowserrcheck
-    - staticcheck
+    - exhaustivestruct
+    - exhaustruct
+    - gci
+    - goerr113
+    - gofumpt
+    - golint
+    - ifshort
+    - interfacer
+    - ireturn
+    - maligned
+    - nonamedreturns
+    - nosnakecase
+    - scopelint
     - structcheck
-    - stylecheck
-    - typecheck
-    - unconvert
-    - unparam
-    - unused
+    - tagliatelle
     - varcheck
-    - whitespace
-    - wsl
+    - varnamelen
+    - wrapcheck
 
 run:
   timeout: 5m
-  skip-dirs:
-    - .github
-    - build
-    - web
 
 issues:
   max-same-issues: 0
   exclude-use-default: false
+  exclude-dirs:
+    - .github
+    - build
+    - web
+  exclude-files:
+    - zz_generated.*
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - bodyclose
+        - cyclop
+        - dupl
+        - errcheck
+        - errchkjson
+        - forcetypeassert
+        - gocyclo
+        - gosec
+        - nosnakecase

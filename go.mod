@@ -1,6 +1,6 @@
 module github.com/ewohltman/discordgo-mock
 
-go 1.19
+go 1.22
 
 require (
 	github.com/bwmarrin/discordgo v0.28.1
