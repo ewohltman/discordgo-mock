@@ -13,7 +13,7 @@ func (roundTripper *RoundTripper) addHandlersUsers(apiVersion string) {
 
 	subrouter := roundTripper.router.PathPrefix(pathUsers).Subrouter()
 
-	pathUserID := fmt.Sprintf("/%s", resourceUserID)
+	pathUserID := "/" + resourceUserID
 	pathUserIDChannels := fmt.Sprintf("/%s/channels", resourceUserID)
 
 	getHandlers := subrouter.Methods(http.MethodGet).Subrouter()
@@ -42,6 +42,7 @@ func (roundTripper *RoundTripper) userChannelsResponse(w http.ResponseWriter, r 
 	err := roundTripper.state.ChannelAdd(ch)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 

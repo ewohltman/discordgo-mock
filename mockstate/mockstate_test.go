@@ -10,6 +10,8 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
+
 	_, err := mockstate.New(
 		mockstate.WithUser(mockuser.New(
 			mockuser.WithID("Bot"),

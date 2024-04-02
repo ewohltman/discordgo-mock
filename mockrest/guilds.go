@@ -15,15 +15,15 @@ func (roundTripper *RoundTripper) addHandlersGuilds(apiVersion string) {
 
 	subrouter := roundTripper.router.PathPrefix(pathGuildID).Subrouter()
 
-	pathRoles := fmt.Sprintf("/%s", resourceRoles)
+	pathRoles := "/" + resourceRoles
 	pathRoleID := fmt.Sprintf("%s/%s", pathRoles, resourceRoleID)
 
-	pathMembers := fmt.Sprintf("/%s", resourceMembers)
+	pathMembers := "/" + resourceMembers
 	pathMembersUserID := fmt.Sprintf("%s/%s", pathMembers, resourceUserID)
 	pathMembersUserIDRoles := fmt.Sprintf("%s/%s", pathMembersUserID, resourceRoles)
 	pathMembersUserIDRoleID := fmt.Sprintf("%s/%s", pathMembersUserIDRoles, resourceRoleID)
 
-	pathChannels := fmt.Sprintf("/%s", resourceChannels)
+	pathChannels := "/" + resourceChannels
 
 	getHandlers := subrouter.Methods(http.MethodGet).Subrouter()
 	getHandlers.HandleFunc("", roundTripper.guildGET)
@@ -63,6 +63,7 @@ func (roundTripper *RoundTripper) guildGET(w http.ResponseWriter, r *http.Reques
 		guild, err := roundTripper.state.Guild(guildID)
 		if err != nil {
 			sendError(w, err)
+
 			return
 		}
 
@@ -81,6 +82,7 @@ func (roundTripper *RoundTripper) guildPATCH(w http.ResponseWriter, r *http.Requ
 		guild, err := roundTripper.state.Guild(guildID)
 		if err != nil {
 			sendError(w, err)
+
 			return
 		}
 
@@ -89,8 +91,10 @@ func (roundTripper *RoundTripper) guildPATCH(w http.ResponseWriter, r *http.Requ
 		dec := json.NewDecoder(r.Body)
 		dec.DisallowUnknownFields()
 
-		if err = dec.Decode(&gp); err != nil {
+		err = dec.Decode(&gp)
+		if err != nil {
 			sendError(w, err)
+
 			return
 		}
 
@@ -110,6 +114,7 @@ func (roundTripper *RoundTripper) guildRolesGET(w http.ResponseWriter, r *http.R
 	guild, err := roundTripper.state.Guild(guildID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -124,6 +129,7 @@ func (roundTripper *RoundTripper) guildRolesIDGET(w http.ResponseWriter, r *http
 	role, err := roundTripper.state.Role(guildID, roleID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -137,6 +143,7 @@ func (roundTripper *RoundTripper) guildMembersGET(w http.ResponseWriter, r *http
 	guild, err := roundTripper.state.Guild(guildID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -151,6 +158,7 @@ func (roundTripper *RoundTripper) guildMembersUserIDGET(w http.ResponseWriter, r
 	member, err := roundTripper.state.Member(guildID, userID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -164,6 +172,7 @@ func (roundTripper *RoundTripper) guildChannelsGET(w http.ResponseWriter, r *htt
 	guild, err := roundTripper.state.Guild(guildID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -181,6 +190,7 @@ func (roundTripper *RoundTripper) guildRolesPOST(w http.ResponseWriter, r *http.
 	err := roundTripper.state.RoleAdd(guildID, role)
 	if err != nil {
 		sendError(w, fmt.Errorf("error adding role to state: %w", err))
+
 		return
 	}
 
@@ -194,6 +204,7 @@ func (roundTripper *RoundTripper) guildMembersPOST(w http.ResponseWriter, r *htt
 	guild, err := roundTripper.state.Guild(guildID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -204,6 +215,7 @@ func (roundTripper *RoundTripper) guildMembersPOST(w http.ResponseWriter, r *htt
 	err = roundTripper.state.MemberAdd(member)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -219,6 +231,7 @@ func (roundTripper *RoundTripper) guildChannelsPOST(w http.ResponseWriter, r *ht
 	guild, err := roundTripper.state.Guild(guildID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -229,8 +242,10 @@ func (roundTripper *RoundTripper) guildChannelsPOST(w http.ResponseWriter, r *ht
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
-	if err = dec.Decode(&ch); err != nil {
+	err = dec.Decode(&ch)
+	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -239,6 +254,7 @@ func (roundTripper *RoundTripper) guildChannelsPOST(w http.ResponseWriter, r *ht
 	err = roundTripper.state.ChannelAdd(ch)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -254,6 +270,7 @@ func (roundTripper *RoundTripper) guildMemberRolesPUT(w http.ResponseWriter, r *
 	member, err := roundTripper.state.Member(guildID, userID)
 	if err != nil {
 		sendError(w, fmt.Errorf("member not found: %w", err))
+
 		return
 	}
 
@@ -262,6 +279,7 @@ func (roundTripper *RoundTripper) guildMemberRolesPUT(w http.ResponseWriter, r *
 	err = roundTripper.state.MemberAdd(member)
 	if err != nil {
 		sendError(w, fmt.Errorf("unable to add or update member: %w", err))
+
 		return
 	}
 
@@ -276,6 +294,7 @@ func (roundTripper *RoundTripper) guildRolesPATCH(w http.ResponseWriter, r *http
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -286,18 +305,21 @@ func (roundTripper *RoundTripper) guildRolesPATCH(w http.ResponseWriter, r *http
 	role, err := roundTripper.state.Role(guildID, roleID)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
 	err = json.Unmarshal(reqBody, role)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
 	err = roundTripper.state.RoleAdd(guildID, role)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -312,6 +334,7 @@ func (roundTripper *RoundTripper) guildMembersPATCH(w http.ResponseWriter, r *ht
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
@@ -322,18 +345,21 @@ func (roundTripper *RoundTripper) guildMembersPATCH(w http.ResponseWriter, r *ht
 	member, err := roundTripper.state.Member(guildID, userID)
 	if err != nil {
 		sendError(w, fmt.Errorf("member not found: %w", err))
+
 		return
 	}
 
 	err = json.Unmarshal(reqBody, member)
 	if err != nil {
 		sendError(w, err)
+
 		return
 	}
 
 	err = roundTripper.state.MemberAdd(member)
 	if err != nil {
 		sendError(w, fmt.Errorf("unable to update member: %w", err))
+
 		return
 	}
 
@@ -348,6 +374,7 @@ func (roundTripper *RoundTripper) guildRolesDELETE(w http.ResponseWriter, r *htt
 	err := roundTripper.state.RoleRemove(guildID, roleID)
 	if err != nil {
 		sendError(w, fmt.Errorf("unable to remove role: %w", err))
+
 		return
 	}
 
@@ -362,12 +389,14 @@ func (roundTripper *RoundTripper) guildMembersDELETE(w http.ResponseWriter, r *h
 	member, err := roundTripper.state.Member(guildID, userID)
 	if err != nil {
 		sendError(w, fmt.Errorf("member not found: %w", err))
+
 		return
 	}
 
 	err = roundTripper.state.MemberRemove(member)
 	if err != nil {
 		sendError(w, fmt.Errorf("unable to remove member: %w", err))
+
 		return
 	}
 
@@ -383,6 +412,7 @@ func (roundTripper *RoundTripper) guildMemberRolesDELETE(w http.ResponseWriter, 
 	member, err := roundTripper.state.Member(guildID, userID)
 	if err != nil {
 		sendError(w, fmt.Errorf("member not found: %w", err))
+
 		return
 	}
 
@@ -391,6 +421,7 @@ func (roundTripper *RoundTripper) guildMemberRolesDELETE(w http.ResponseWriter, 
 	for i, memberRoleID := range member.Roles {
 		if memberRoleID == roleID {
 			index = i
+
 			break
 		}
 	}

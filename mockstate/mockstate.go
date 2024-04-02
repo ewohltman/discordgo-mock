@@ -38,6 +38,7 @@ func New(optionFuncs ...OptionFunc) (*discordgo.State, error) {
 func WithUser(user *discordgo.User) OptionFunc {
 	return func(state *discordgo.State) error {
 		state.User = user
+
 		return nil
 	}
 }
